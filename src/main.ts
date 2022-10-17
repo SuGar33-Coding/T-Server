@@ -4,8 +4,8 @@ import { JSONResponse } from "./util.ts";
 function handler(req: Request): Response {
 	const { pathname: path } = new URL(req.url);
 
-	console.debug(`${req.method} ${path}`)
-	
+	console.debug(`${req.method} ${path}`);
+
 	switch (path) {
 		case "/secret":
 			return new Response("You found me!!");
@@ -18,4 +18,4 @@ function handler(req: Request): Response {
 	}
 }
 
-serve(handler);
+serve(handler, { port: parseInt(Deno.env.get("PORT") ?? "8000") });
