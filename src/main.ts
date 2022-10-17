@@ -25,4 +25,5 @@ fastify.setErrorHandler((err, req, res) => {
 
 fastify.listen({
 	port: parseInt(process.env.PORT ?? "3000"),
+	host: "::",
 });
