@@ -1,2 +1,3 @@
 # T-Server
-Serving T for the party
+
+MBTA-API caching server for T-Party iOS app.
