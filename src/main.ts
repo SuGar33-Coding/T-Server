@@ -1,9 +1,11 @@
 import { serve } from "../deps.ts";
 import { JSONResponse } from "./util.ts";
 
-function handler(_req: Request): Response {
-	const { pathname: path } = new URL(_req.url);
+function handler(req: Request): Response {
+	const { pathname: path } = new URL(req.url);
 
+	console.debug(`${req.method} ${path}`)
+	
 	switch (path) {
 		case "/secret":
 			return new Response("You found me!!");
