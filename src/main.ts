@@ -1,21 +1,28 @@
-import { serve } from "../deps.ts";
-import { JSONResponse } from "./util.ts";
+import "dotenv/config";
+import Fastify from "fastify";
+import fastifyCors from "@fastify/cors";
 
-function handler(req: Request): Response {
-	const { pathname: path } = new URL(req.url);
+const fastify = Fastify({
+	logger: { level: "debug" },
+});
 
-	console.debug(`${req.method} ${path}`);
+const validDomains = (process.env.CORS_ACCESS as string).split(",");
+fastify.register(fastifyCors, {
+	origin: validDomains.length > 1 ? validDomains : validDomains[0],
+});
 
-	switch (path) {
-		case "/secret":
-			return new Response("You found me!!");
-		case "/hi":
-			return JSONResponse({
-				msg: "Hi",
-			});
-		default:
-			return new Response(null, { status: 404 });
-	}
-}
+fastify.get("/hi", (req, res) => {
+	res.send({
+		msg: "Hi :)",
+	});
+});
 
-serve(handler, { port: parseInt(Deno.env.get("PORT") ?? "8000") });
+fastify.setErrorHandler((err, req, res) => {
+	fastify.log.error(err);
+
+	res.status(500).send();
+});
+
+fastify.listen({
+	port: parseInt(process.env.PORT ?? "3000"),
+});

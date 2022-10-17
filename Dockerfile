@@ -1,18 +1,18 @@
-FROM denoland/deno:alpine
+FROM node:lts-alpine
 
-# The port that your application listens to.
-# EXPOSE 1993
-
+RUN apk update && apk upgrade && \
+    apk add --no-cache git
+RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+
 COPY ./ /usr/src/app
-# Prefer not to run as root.
-# USER deno
+RUN npm install --production=false 
+RUN npm run build
+# only keep what's needed for prod
+RUN rm -rf node_modules && npm install --production && npm cache clean --force
+ENV NODE_ENV production
+ENV PORT 80
 
-RUN deno cache deps.ts
+EXPOSE 80
 
-# These steps will be re-run upon each file change in your working directory:
-ADD . .
-# Compile the main app so that it doesn't need to be compiled each startup/entry.
-RUN deno cache src/main.ts
-
-CMD ["run", "--allow-net", "--allow-env=PORT", "src/main.ts"]
+CMD [ "npm", "start" ]

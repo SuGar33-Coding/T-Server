@@ -1,0 +1,33 @@
+{
+  "name": "t-server",
+  "version": "0.1.0",
+  "description": "MBTA-API caching server for T-Party iOS app.",
+  "main": "main.js",
+  "scripts": {
+    "clean": "rimraf dist",
+		"build": "npm run clean && tsc",
+    "start": "node dist/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SuGar33-Coding/T-Server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SuGar33-Coding/T-Server/issues"
+  },
+  "homepage": "https://github.com/SuGar33-Coding/T-Server#readme",
+  "dependencies": {
+    "@fastify/cors": "^8.1.0",
+    "dotenv": "^16.0.3",
+    "fastify": "^4.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^18.11.0",
+    "prettier": "^2.7.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.4"
+  }
+}
