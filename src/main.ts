@@ -1,6 +1,9 @@
 import "dotenv/config";
+
 import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
+
+import { mbta } from "./mbta";
 
 const fastify = Fastify({
 	logger: { level: "debug" },
@@ -15,6 +18,11 @@ fastify.get("/hi", (req, res) => {
 	res.send({
 		msg: "Hi :)",
 	});
+});
+
+fastify.get("/routes/all", async (req, res) => {
+	const allRoutes = await mbta.fetchRoutes();
+	res.send(allRoutes);
 });
 
 fastify.setErrorHandler((err, req, res) => {
