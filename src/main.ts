@@ -26,10 +26,14 @@ fastify.get("/routes/all", async (req, res) => {
 	res.send(allRoutes);
 });
 
-fastify.get("/stops/near/:lat/:long", async (req, res) => {
+fastify.get<{
+	Params: { lat: string; long: string };
+}>("/stops/near/:lat/:long", async (req, res) => {
+	const { lat, long } = req.params;
+
 	const stops = await mbta.fetchStops({
-		latitude: 42.34919,
-		longitude: -71.10404,
+		latitude: lat,
+		longitude: long,
 		limit: 3,
 	});
 
@@ -47,7 +51,7 @@ fastify.get<{
 });
 
 fastify.get<{
-	Params: { stopName: string, tz: string };
+	Params: { stopName: string; tz: string };
 }>("/schedules/:stopName/:tz", async (req, res) => {
 	const { stopName, tz } = req.params;
 
@@ -66,4 +70,3 @@ fastify.listen({
 	port: parseInt(process.env.PORT ?? "3000"),
 	host: "::",
 });
-
