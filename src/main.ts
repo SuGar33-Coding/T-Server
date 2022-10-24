@@ -37,11 +37,21 @@ fastify.get("/stops/near/:lat/:long", async (req, res) => {
 });
 
 fastify.get<{
-	Params: { stopName: string, curTime: string };
-}>("/schedules/:stopName/:tz", async (req, res) => {
+	Params: { stopName: string };
+}>("/schedules/:stopName", async (req, res) => {
 	const { stopName } = req.params;
 
 	let schedules = await fetchSchedulesWithStops(stopName);
+
+	res.send(schedules);
+});
+
+fastify.get<{
+	Params: { stopName: string, tz: string };
+}>("/schedules/:stopName/:tz", async (req, res) => {
+	const { stopName, tz } = req.params;
+
+	let schedules = await fetchSchedulesWithStops(stopName, tz);
 
 	res.send(schedules);
 });

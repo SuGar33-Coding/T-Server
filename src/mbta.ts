@@ -3,7 +3,7 @@ import formatInTimeZone from "date-fns-tz/formatInTimeZone";
 
 export const mbta = new MBTA(process.env.MBTA_API_KEY);
 
-export async function fetchSchedulesWithStops(stopName: string, tz = "EST", limit = 3) {
+export async function fetchSchedulesWithStops(stopName: string, tz = "America/New_York", limit = 3) {
 	if (process.env.DEBUG) {
 		console.log(formatInTimeZone(new Date(), tz, "HH:mm"));
 	}
