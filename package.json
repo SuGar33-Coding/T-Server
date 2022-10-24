@@ -20,7 +20,7 @@
   "homepage": "https://github.com/SuGar33-Coding/T-Server#readme",
   "dependencies": {
     "@fastify/cors": "^8.1.0",
-    "date-fns": "^2.29.3",
+    "date-fns-tz": "^1.3.7",
     "dotenv": "^16.0.3",
     "fastify": "^4.9.1",
     "mbta-client": "^1.1.7"

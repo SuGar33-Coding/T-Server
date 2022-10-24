@@ -37,8 +37,8 @@ fastify.get("/stops/near/:lat/:long", async (req, res) => {
 });
 
 fastify.get<{
-	Params: { stopName: string };
-}>("/schedules/:stopName", async (req, res) => {
+	Params: { stopName: string, curTime: string };
+}>("/schedules/:stopName/:tz", async (req, res) => {
 	const { stopName } = req.params;
 
 	let schedules = await fetchSchedulesWithStops(stopName);

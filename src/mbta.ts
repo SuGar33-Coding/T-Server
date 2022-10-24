@@ -1,13 +1,15 @@
 import MBTA from "mbta-client";
-import format from "date-fns/format";
+import formatInTimeZone from "date-fns-tz/formatInTimeZone";
 
 export const mbta = new MBTA(process.env.MBTA_API_KEY);
 
-export async function fetchSchedulesWithStops(stopName: string, limit = 3) {
-	console.log(format(new Date(), "HH:mm"));
+export async function fetchSchedulesWithStops(stopName: string, tz = "EST", limit = 3) {
+	if (process.env.DEBUG) {
+		console.log(formatInTimeZone(new Date(), tz, "HH:mm"));
+	}
 	let schedules = await mbta.fetchSchedules({
 		stop: stopName,
-		min_time: format(new Date(), "HH:mm"),
+		min_time: formatInTimeZone(new Date(), tz, "HH:mm"),
 		include: "stop",
 		sort: "arrival_time",
 		limit,
