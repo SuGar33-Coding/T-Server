@@ -54,7 +54,8 @@ export async function fetchAllStops(limit?: number) {
 			id: stop.id,
 			name: stop.attributes.name,
 			latitude: stop.attributes.latitude,
-			longitude: stop.attributes.longitude
+			longitude: stop.attributes.longitude,
+			route_type: stop.attributes.vehicle_type
 		}
-	})
+	}).filter((stop: any) => [0,1,3].includes(stop.route_type))
 }
