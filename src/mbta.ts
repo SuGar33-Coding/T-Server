@@ -43,3 +43,18 @@ export async function fetchSchedulesWithStops(stopName: string, tz = "America/Ne
 	});
 	return schedules;
 }
+
+export async function fetchAllStops(limit = 3) {
+	let stops = await mbta.fetchStops({
+		limit
+	})
+
+	return stops.data.map((stop: any) => {
+		return {
+			id: stop.id,
+			name: stop.attributes.name,
+			latitude: stop.attributes.latitude,
+			longitude: stop.attributes.longitude
+		}
+	})
+}
