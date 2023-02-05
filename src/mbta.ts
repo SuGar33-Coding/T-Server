@@ -44,7 +44,7 @@ export async function fetchSchedulesWithStops(stopName: string, tz = "America/Ne
 	return schedules;
 }
 
-export async function fetchAllStops(limit = 3) {
+export async function fetchAllStops(limit?: number) {
 	let stops = await mbta.fetchStops({
 		limit
 	})

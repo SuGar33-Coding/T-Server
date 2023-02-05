@@ -33,6 +33,15 @@ fastify.get("/stops", async (req, res) => {
 });
 
 fastify.get<{
+	Params: { limit: number };
+}>("/stops/:limit", async (req, res) => {
+	const { limit } = req.params;
+	const stops = await fetchAllStops(limit);
+
+	res.send(stops);
+});
+
+fastify.get<{
 	Params: { lat: string; long: string };
 }>("/stops/near/:lat/:long", async (req, res) => {
 	const { lat, long } = req.params;
