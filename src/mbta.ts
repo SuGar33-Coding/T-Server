@@ -3,7 +3,13 @@ import formatInTimeZone from "date-fns-tz/formatInTimeZone";
 
 export const mbta = new MBTA(process.env.MBTA_API_KEY);
 
-export async function fetchSchedulesWithStops(stopName: string, tz = "America/New_York", limit = 3) {
+export const stops: any[] = [];
+
+export async function fetchSchedulesWithStops(
+	stopName: string,
+	tz = "America/New_York",
+	limit = 3
+) {
 	if (process.env.DEBUG) {
 		console.log(formatInTimeZone(new Date(), tz, "HH:mm"));
 	}
@@ -46,16 +52,48 @@ export async function fetchSchedulesWithStops(stopName: string, tz = "America/Ne
 
 export async function fetchAllStops(limit?: number) {
 	let stops = await mbta.fetchStops({
-		limit
-	})
+		limit,
+	});
 
-	return stops.data.map((stop: any) => {
-		return {
-			id: stop.id,
-			name: stop.attributes.name,
-			latitude: stop.attributes.latitude,
-			longitude: stop.attributes.longitude,
-			route_type: stop.attributes.vehicle_type
-		}
-	}).filter((stop: any) => [0,1,3].includes(stop.route_type))
+	return stops.data
+		.map((stop: any) => {
+			return {
+				id: stop.id,
+				name: stop.attributes.name,
+				latitude: stop.attributes.latitude,
+				longitude: stop.attributes.longitude,
+				route_type: stop.attributes.vehicle_type,
+			};
+		})
+		.filter((stop: any) => [0, 1, 3].includes(stop.route_type));
+}
+
+export async function cacheAllStopsWithRoutes() {
+	let routes: any[] = (await mbta.fetchRoutes()).data.filter((route: any) =>
+		[0, 1, 3].includes(route.attributes.type)
+	);
+
+	for (const route of routes) {
+		console.debug(`fetching stops for route ${route.id}`)
+		let routeStops = (await mbta.fetchStops({ route: route.id })).data.map(
+			(stop: any) => {
+				const ret: MBTAStop = {
+					id: stop.id,
+					name: stop.attributes.name,
+					latitude: stop.attributes.latitude,
+					longitude: stop.attributes.longitude,
+					route: {
+						id: route.id,
+						direction_destinations: route.attributes.direction_destinations,
+						direction_names: route.attributes.direction_names,
+						type: route.attributes.type,
+						color: route.attributes.color,
+						long_name: route.attributes.long_name,
+					},
+				};
+				return ret;
+			}
+		);
+		stops.push(...routeStops);
+	}
 }

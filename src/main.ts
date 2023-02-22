@@ -3,7 +3,13 @@ import "dotenv/config";
 import Fastify from "fastify";
 import fastifyCors from "@fastify/cors";
 
-import { fetchAllStops, fetchSchedulesWithStops, mbta } from "./mbta";
+import {
+	cacheAllStopsWithRoutes,
+	fetchAllStops,
+	fetchSchedulesWithStops,
+	mbta,
+	stops,
+} from "./mbta";
 
 const fastify = Fastify({
 	logger: { level: "debug" },
@@ -36,9 +42,8 @@ fastify.get<{
 	Params: { limit: number };
 }>("/stops/:limit", async (req, res) => {
 	const { limit } = req.params;
-	const stops = await fetchAllStops(limit);
 
-	res.send(stops);
+	res.send(stops.slice(0, limit));
 });
 
 fastify.get<{
@@ -98,9 +103,15 @@ fastify.setErrorHandler((err, req, res) => {
 	res.status(500).send();
 });
 
-fastify.listen({
-	port: parseInt(process.env.PORT ?? "3000"),
-	// NOTE: "::" allows the server to be accessed by other devices on LAN
-	// via this device's IP addr
-	host: process.env.HOST ?? "::",
+async function populateCache() {
+	await cacheAllStopsWithRoutes();
+}
+
+populateCache().then(() => {
+	fastify.listen({
+		port: parseInt(process.env.PORT ?? "3000"),
+		// NOTE: "::" allows the server to be accessed by other devices on LAN
+		// via this device's IP addr
+		host: process.env.HOST ?? "::",
+	});
 });
