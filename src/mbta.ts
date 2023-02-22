@@ -1,5 +1,6 @@
 import MBTA from "mbta-client";
 import formatInTimeZone from "date-fns-tz/formatInTimeZone";
+import { fastify } from "./main";
 
 export const mbta = new MBTA(process.env.MBTA_API_KEY);
 
@@ -10,7 +11,7 @@ export async function fetchSchedulesWithStops(
 	tz = "America/New_York",
 	limit = 3
 ) {
-	if (process.env.DEBUG) {
+	if (process.env.NODE_ENV == "development") {
 		console.log(formatInTimeZone(new Date(), tz, "HH:mm"));
 	}
 	let schedules = await mbta.fetchSchedules({
@@ -74,7 +75,7 @@ export async function cacheAllStopsWithRoutes() {
 	);
 
 	for (const route of routes) {
-		console.debug(`fetching stops for route ${route.id}`)
+		fastify.log.debug(`fetching stops for route ${route.id}`)
 		let routeStops = (await mbta.fetchStops({ route: route.id })).data.map(
 			(stop: any) => {
 				const ret: MBTAStop = {
@@ -96,4 +97,5 @@ export async function cacheAllStopsWithRoutes() {
 		);
 		stops.push(...routeStops);
 	}
+	fastify.log.info("Done fetching stops")
 }

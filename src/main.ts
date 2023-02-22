@@ -11,8 +11,25 @@ import {
 	stops,
 } from "./mbta";
 
-const fastify = Fastify({
-	logger: { level: "debug" },
+const envToLogger: {
+	[key:string]: any
+} = {
+	development: {
+		transport: {
+			target: "pino-pretty",
+			options: {
+				translateTime: "HH:MM:ss Z",
+				ignore: "pid,hostname",
+			},
+		},
+		level: "debug"
+	},
+	production: true,
+	test: false,
+};
+
+export const fastify = Fastify({
+	logger: envToLogger[process.env.NODE_ENV!],
 });
 
 const validDomains = (process.env.CORS_ACCESS as string).split(",");
