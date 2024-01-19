@@ -5,10 +5,10 @@ import fastifyCors from "@fastify/cors";
 
 import {
 	cacheAllStopsWithRoutes,
-	fetchAllStops,
 	fetchSchedulesWithStops,
 	mbta,
 	stops,
+	routes,
 } from "./mbta";
 
 const envToLogger: {
@@ -43,15 +43,11 @@ fastify.get("/hi", (req, res) => {
 	});
 });
 
-fastify.get("/routes/all", async (req, res) => {
-	const allRoutes = await mbta.fetchRoutes();
-
-	res.send(allRoutes);
+fastify.get("/routes", async (req, res) => {
+	res.send(routes);
 });
 
 fastify.get("/stops", async (req, res) => {
-	const stops = await fetchAllStops();
-
 	res.send(stops);
 });
 
@@ -127,8 +123,8 @@ async function populateCache() {
 populateCache().then(() => {
 	fastify.listen({
 		port: parseInt(process.env.PORT ?? "3000"),
-		// NOTE: "::" allows the server to be accessed by other devices on LAN
-		// via this device's IP addr
-		host: process.env.HOST ?? "::",
+		host: process.env.DOMAIN ?? "0.0.0.0",
+	}).catch((err) => {
+		fastify.log.error(err);
 	});
 });

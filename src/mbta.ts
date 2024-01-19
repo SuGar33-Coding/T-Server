@@ -4,7 +4,8 @@ import { fastify } from "./main";
 
 export const mbta = new MBTA(process.env.MBTA_API_KEY);
 
-export const stops: any[] = [];
+export const stops: MBTAStop[] = [];
+export let routes: MBTARoute[] = [];
 
 export async function fetchSchedulesWithStops(
 	stopName: string,
@@ -51,28 +52,23 @@ export async function fetchSchedulesWithStops(
 	return schedules;
 }
 
-export async function fetchAllStops(limit?: number) {
-	let stops = await mbta.fetchStops({
-		limit,
-	});
-
-	return stops.data
-		.map((stop: any) => {
-			return {
-				id: stop.id,
-				name: stop.attributes.name,
-				latitude: stop.attributes.latitude,
-				longitude: stop.attributes.longitude,
-				route_type: stop.attributes.vehicle_type,
-			};
-		})
-		.filter((stop: any) => [0, 1, 3].includes(stop.route_type));
-}
-
 export async function cacheAllStopsWithRoutes() {
-	let routes: any[] = (await mbta.fetchRoutes()).data.filter((route: any) =>
+	let routesData: any[] = (await mbta.fetchRoutes()).data.filter((route: any) =>
 		[0, 1, 3].includes(route.attributes.type)
 	);
+
+	routes = routesData.map((route: any) => {
+		const ret: MBTARoute = {
+			id: route.id,
+			direction_destinations: route.attributes.direction_destinations,
+			direction_names: route.attributes.direction_names,
+			type: route.attributes.type,
+			color: route.attributes.color,
+			long_name: route.attributes.long_name,
+			short_name: route.attributes.short_name,
+		};
+		return ret;
+	})
 
 	for (const route of routes) {
 		fastify.log.debug(`fetching stops for route ${route.id}`)
@@ -83,14 +79,8 @@ export async function cacheAllStopsWithRoutes() {
 					name: stop.attributes.name,
 					latitude: stop.attributes.latitude,
 					longitude: stop.attributes.longitude,
-					route: {
-						id: route.id,
-						direction_destinations: route.attributes.direction_destinations,
-						direction_names: route.attributes.direction_names,
-						type: route.attributes.type,
-						color: route.attributes.color,
-						long_name: route.attributes.long_name,
-					},
+					route: route,
+					zone: stop.relationships.zone?.data?.id,
 				};
 				return ret;
 			}

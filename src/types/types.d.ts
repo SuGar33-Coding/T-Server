@@ -6,6 +6,7 @@ type MBTAStop = {
 	latitude: Number;
 	longitude: Number;
 	route: MBTARoute;
+	zone?: String;
 };
 
 type MBTARoute = {
@@ -15,6 +16,7 @@ type MBTARoute = {
 	type: RouteType;
 	color: String;
 	long_name: String;
+	short_name?: String;
 };
 
 enum RouteType {
